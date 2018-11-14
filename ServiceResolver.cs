@@ -47,8 +47,9 @@ namespace ServiceResolver
             {
                 if (_instance != null)
                 {
-                    _instance = new ServiceResolver(serviceProvider);
+                    throw new ResolverAlreadyInstantatedException();
                 }
+                _instance = new ServiceResolver(serviceProvider);
             }
         }
 
