@@ -1,11 +1,25 @@
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ServiceResolver
+namespace PaxDev.ServiceResolver
 {
-    public interface IServiceResolverInitialiser
+    public interface IServiceProviderBuilder
     {
-        IConfiguration BuildConfiguration();
-        IServiceCollection ConfigureServices(IConfiguration configuration);
+        IServiceProvider Build();
+    }
+
+    public abstract class ServiceProviderBuilder : IServiceProviderBuilder
+    {
+        public IServiceProvider Build()
+        {
+            var configuration = BuildConfiguration();
+            var services = new ServiceCollection();
+            ConfigureServices(services, configuration);
+            return services.BuildServiceProvider(validateScopes: true);
+        }
+
+        public abstract IConfiguration BuildConfiguration();
+        public abstract void ConfigureServices(ServiceCollection services, IConfiguration configuration);
     }
 }

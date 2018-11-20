@@ -1,6 +1,6 @@
 using System;
 
-namespace ServiceResolver
+namespace PaxDev.ServiceResolver
 {
     public class ResolverAlreadyInstantatedException : Exception
     {
