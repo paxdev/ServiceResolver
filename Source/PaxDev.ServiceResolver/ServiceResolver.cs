@@ -73,5 +73,10 @@ namespace PaxDev.ServiceResolver
                 scope?.Dispose();
             }
         }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
