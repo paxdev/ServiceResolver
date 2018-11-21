@@ -11,7 +11,7 @@ namespace PaxDev.ServiceResolver
 
         readonly IServiceProvider _serviceProvider;
 
-        protected ServiceResolver(IServiceProvider serviceProvider)
+        public ServiceResolver(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

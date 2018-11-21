@@ -7,14 +7,15 @@ namespace PaxDev.ServiceResolver
 {
     public class ServiceResolverBuilder
     {
-        readonly List<Action<IConfigurationBuilder>> configurationActions = new List<Action<IConfigurationBuilder>>();
-        readonly List<Action<IConfiguration, IServiceCollection>> configureServicesActions = new List<Action<IConfiguration, IServiceCollection>>();
+        readonly List<Action<IConfigurationBuilder>> configurationActions 
+            = new List<Action<IConfigurationBuilder>>();
+
+        readonly List<Action<IConfiguration, IServiceCollection>> configureServicesActions 
+            = new List<Action<IConfiguration, IServiceCollection>>();
 
         bool resolverBuilt = false;
-
-
-        public ServiceResolverBuilder ConfigureServices(
-            Action<IConfiguration, IServiceCollection> configureServiceAction)
+        
+        public ServiceResolverBuilder ConfigureServices(Action<IConfiguration, IServiceCollection> configureServiceAction)
         {
             configureServicesActions.Add(configureServiceAction);
             return this;
@@ -29,7 +30,7 @@ namespace PaxDev.ServiceResolver
         public ServiceResolverBuilder UseStartup<TStartup>() where TStartup : IServiceResolverStartup, new()
         {
             var startup = new TStartup();
-            configurationActions.Add(config => startup.ConfigureServices(config));
+            configurationActions.Add(config => startup.Configure(config));
             configureServicesActions.Add((config, services) => startup.ConfigureServices(config, services));
             return this;
         }
@@ -41,6 +42,21 @@ namespace PaxDev.ServiceResolver
                 throw new InvalidOperationException("Build can only be called once.");
             }
 
+            resolverBuilt = true;
+
+            var configuration = BuildConfiguration();
+
+            var services = RegisterServices(configuration);
+
+            services.AddSingleton<IServiceResolver, ServiceResolver>();
+
+            var provider = services.BuildServiceProvider();
+
+            return provider.GetRequiredService<IServiceResolver>();
+        }
+
+        IConfigurationRoot BuildConfiguration()
+        {
             var configurationBuilder = new ConfigurationBuilder();
 
             foreach (var configurationAction in configurationActions)
@@ -49,6 +65,11 @@ namespace PaxDev.ServiceResolver
             }
 
             var configuration = configurationBuilder.Build();
+            return configuration;
+        }
+
+        ServiceCollection RegisterServices(IConfigurationRoot configuration)
+        {
             var services = new ServiceCollection();
 
             foreach (var configureServicesAction in configureServicesActions)
@@ -56,11 +77,7 @@ namespace PaxDev.ServiceResolver
                 configureServicesAction(configuration, services);
             }
 
-            services.AddSingleton<IServiceResolver, ServiceResolver>();
-
-            var provider = services.BuildServiceProvider();
-
-            return provider.GetRequiredService<IServiceResolver>();
+            return services;
         }
     }
 }

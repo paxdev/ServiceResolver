@@ -5,7 +5,7 @@ namespace PaxDev.ServiceResolver
 {
     public interface IServiceResolverStartup
     {
-        void ConfigureServices(IConfigurationBuilder configurationBuilder);
+        void Configure(IConfigurationBuilder configurationBuilder);
         void ConfigureServices(IConfiguration configuration, IServiceCollection services);
     }
 }
