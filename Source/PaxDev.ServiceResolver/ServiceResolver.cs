@@ -6,9 +6,6 @@ namespace PaxDev.ServiceResolver
 {
     public class ServiceResolver : IServiceResolver
     {
-        static ServiceResolver Instance;
-        static readonly object Locker = new object();
-
         readonly IServiceProvider _serviceProvider;
 
         public ServiceResolver(IServiceProvider serviceProvider)
@@ -16,46 +13,12 @@ namespace PaxDev.ServiceResolver
             _serviceProvider = serviceProvider;
         }
         
-        public static IServiceResolver GetInstance()
-        {
-            lock (Locker)
-            {
-                if (Instance == null)
-                {
-                    throw new ResolverNotInstantiatedException();
-                }
-            }
-
-            return Instance;
-        }
-        
-        public static void Initialise<TServiceProviderBuilder>() where TServiceProviderBuilder : IServiceProviderBuilder, new()
-        {
-            lock (Locker)
-            {
-                if (Instance != null)
-                {
-                    throw new ResolverAlreadyInstantatedException();
-                }
-                var serviceProviderBuilder = new TServiceProviderBuilder();
-                var serviceProvider = serviceProviderBuilder.Build();
-                Instance = new ServiceResolver(serviceProvider);
-            }
-
-        }
-
         public void ResolveAndRun<TService>(Action<TService> action)
         {
-            IServiceScope scope = null;
-            try
+            using (var scope = _serviceProvider.CreateScope())
             {
-                scope = _serviceProvider.CreateScope();
                 var service = scope.ServiceProvider.GetRequiredService<TService>();
                 action(service);
-            }
-            finally
-            {
-                scope?.Dispose();
             }
         }
 
@@ -76,7 +39,10 @@ namespace PaxDev.ServiceResolver
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (_serviceProvider is IDisposable d)
+            {
+                d.Dispose();
+            }
         }
     }
 }

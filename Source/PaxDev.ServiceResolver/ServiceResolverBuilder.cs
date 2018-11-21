@@ -68,7 +68,7 @@ namespace PaxDev.ServiceResolver
             return configuration;
         }
 
-        ServiceCollection RegisterServices(IConfigurationRoot configuration)
+        ServiceCollection RegisterServices(IConfiguration configuration)
         {
             var services = new ServiceCollection();
 
