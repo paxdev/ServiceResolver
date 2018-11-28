@@ -3,7 +3,7 @@ using Machine.Fakes;
 using Machine.Specifications;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace PaxDev.ServiceResolver.Specifications.RunningServices
+namespace PaxDev.ServiceResolver.Specifications.ResolvingServices.RunningServices
 {
     [Subject(typeof(ServiceResolver))]
     public class RunningServicesContext : WithSubject<ServiceResolver>

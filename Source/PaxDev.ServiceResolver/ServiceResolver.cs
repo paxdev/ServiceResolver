@@ -6,18 +6,20 @@ namespace PaxDev.ServiceResolver
 {
     public class ServiceResolver : IServiceResolver
     {
-        readonly IServiceProvider _serviceProvider;
+        readonly IServiceProvider serviceProvider;
 
         public ServiceResolver(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
+            this.serviceProvider = serviceProvider;
         }
         
         public void ResolveAndRun<TService>(Action<TService> action)
         {
-            using (var scope = _serviceProvider.CreateScope())
+            using (var scope = serviceProvider.CreateScope())
             {
-                var service = scope.ServiceProvider.GetRequiredService<TService>();
+                var service = scope
+                                .ServiceProvider
+                                .GetRequiredService<TService>();
                 action(service);
             }
         }
@@ -27,8 +29,10 @@ namespace PaxDev.ServiceResolver
             IServiceScope scope = null;
             try
             {
-                scope = _serviceProvider.CreateScope();
-                var service = scope.ServiceProvider.GetRequiredService<TService>();
+                scope = serviceProvider.CreateScope();
+                var service = scope
+                                .ServiceProvider
+                                .GetRequiredService<TService>();
                 await action(service);
             }
             finally
@@ -39,7 +43,7 @@ namespace PaxDev.ServiceResolver
 
         public void Dispose()
         {
-            if (_serviceProvider is IDisposable d)
+            if (serviceProvider is IDisposable d)
             {
                 d.Dispose();
             }

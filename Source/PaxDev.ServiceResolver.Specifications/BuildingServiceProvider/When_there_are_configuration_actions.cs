@@ -4,17 +4,17 @@ namespace PaxDev.ServiceResolver.Specifications.BuildingServiceProvider
 {
     public class When_there_are_configuration_actions : ServiceResolverBuilderContext
     {
-        static int configurationActionCalledTimes;
+        static int ConfigurationActionCalledTimes;
 
         Establish context = () =>
         {
-            configurationActionCalledTimes = 0;
-            ServiceResolverBuilder.Configure(builder => configurationActionCalledTimes++);
-            ServiceResolverBuilder.Configure(builder => configurationActionCalledTimes++);
+            ConfigurationActionCalledTimes = 0;
+            Subject.Configure(builder => ConfigurationActionCalledTimes++);
+            Subject.Configure(builder => ConfigurationActionCalledTimes++);
         };
 
-        Because of = () => ServiceResolverBuilder.Build();
+        Because of = () => Subject.Build();
 
-        It should_run_all_the_actions = () => configurationActionCalledTimes.ShouldEqual(2);
+        It should_run_all_the_actions = () => ConfigurationActionCalledTimes.ShouldEqual(2);
     }
 }

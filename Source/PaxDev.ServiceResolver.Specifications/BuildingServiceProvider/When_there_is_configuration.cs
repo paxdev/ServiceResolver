@@ -1,36 +1,26 @@
-﻿using System.Collections.Generic;
-using Machine.Specifications;
-using Microsoft.Extensions.Configuration.Memory;
+﻿using Machine.Specifications;
 
 namespace PaxDev.ServiceResolver.Specifications.BuildingServiceProvider
 {
     public class When_there_is_configuration : ServiceResolverBuilderContext
     {
-        protected internal const string ExpectedConfigurationKey = "expectedKey";
-        protected internal const string ExpectedConfigurationValue = "expectedValue";
-
-        static string actualConfigurationValue;
+        static string ActualConfigurationValue;
 
         Establish context = () =>
         {
-            var configuration = new MemoryConfigurationSource
-            {
-                InitialData = new Dictionary<string, string> {{ExpectedConfigurationKey, ExpectedConfigurationValue}}
-            };
+            var configuration = new TestConfiguration();
 
-            ServiceResolverBuilder.Configure(builder => builder.Add(configuration));
+            Subject.Configure(builder => builder.Add(configuration));
 
-            ServiceResolverBuilder.ConfigureServices
+            Subject.ConfigureServices
             (
-                (config, services) => actualConfigurationValue = config[ExpectedConfigurationKey]
+                (config, services) => ActualConfigurationValue = config[TestConfiguration.Key]
             );
-
-
         };
-
-        Because of = () => ServiceResolverBuilder.Build();
+        
+        Because of = () => Subject.Build();
 
         It should_pass_the_configuration_to_configure_services = 
-            () => actualConfigurationValue.ShouldEqual(ExpectedConfigurationValue);
+            () => ActualConfigurationValue.ShouldEqual(TestConfiguration.Value);
     }
 }
