@@ -24,6 +24,15 @@ namespace PaxDev.ServiceResolver
             }
         }
 
+        public TReturn ResolveAndRun<TService, TReturn>(Func<TService, TReturn> func)
+        {
+            TReturn returnValue = default;
+
+            ResolveAndRun<TService>(s => returnValue = func(s));
+
+            return returnValue;
+        }
+
         public async Task ResolveAndRunAsync<TService>(Func<TService, Task> action)
         {
             IServiceScope scope = null;
@@ -39,6 +48,15 @@ namespace PaxDev.ServiceResolver
             {
                 scope?.Dispose();
             }
+        }
+
+        public async Task<TReturn> ResolveAndRunAsync<TService, TReturn>(Func<TService, Task<TReturn>> func)
+        {
+             TReturn returnValue = default;
+
+             await ResolveAndRunAsync<TService>(async service => await func(service));
+
+             return returnValue;
         }
 
         public void Dispose()

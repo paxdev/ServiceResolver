@@ -18,6 +18,17 @@ namespace PaxDev.ServiceResolver.Specifications.BuildingServiceProvider
         It should_resolve_correctly = () =>
             Resolver.ResolveAndRun(AssertResolvedClassExpected());
 
+        It should_do = () =>
+        {
+            string objGetValue = null;
+            LazyLoadedServiceResolver<TestStartup>.Get().ResolveAndRun((TestClass c) =>
+            {
+                objGetValue  = c.GetValue;   
+            });
+
+            Console.WriteLine(objGetValue);
+        };
+
         static Action<TestClass> AssertResolvedClassExpected() =>
             c => c.GetValue.ShouldEqual(TestConfiguration.Value);
 
